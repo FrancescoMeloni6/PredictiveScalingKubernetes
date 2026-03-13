@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random-service
+  template:
+    metadata:
+      labels:
+        app: random-service
+    spec:
+      containers:
+      - name: random-service
+        image: random-service
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
