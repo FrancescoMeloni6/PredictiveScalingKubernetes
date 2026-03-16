@@ -1,17 +1,35 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template_string
 import random
-from prometheus_client import Counter, generate_latest
-from prometheus_client import CONTENT_TYPE_LATEST
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__)
 
 REQUEST_COUNT = Counter("random_requests_total", "Total random number requests")
 
-@app.route("/random")
+HTML_PAGE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Random Number Service</title>
+</head>
+<body>
+    <h1>Random Number Generator</h1>
+    <h2>{{number}}</h2>
+    <form method="get">
+        <button type="submit">Genera</button>
+    </form>
+</body>
+</html>
+"""
+
+@app.route("/")
 def random_number():
     REQUEST_COUNT.inc()
-    value = random.randint(0, 1000000)
-    return jsonify({"value": value})
+    r = random.randint(0, 1000000)
+    value = 0
+    for _ in range(r): # simulazione lavoro CPU
+        value += 1
+    return render_template_string(HTML_PAGE, number=value)
 
 @app.route("/metrics")
 def metrics():
