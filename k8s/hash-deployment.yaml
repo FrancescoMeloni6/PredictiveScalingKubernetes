@@ -11,10 +11,14 @@ spec:
     metadata:
       labels:
         app: hash-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "5001"
     spec:
       containers:
       - name: hash-service
         image: hash-service
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5001
