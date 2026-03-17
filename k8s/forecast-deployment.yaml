@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forecast-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forecast-service
+  template:
+    metadata:
+      labels:
+        app: forecast-service
+    spec:
+      serviceAccountName: forecast-sa
+      containers:
+      - name: forecast
+        image: forecast-service
+        imagePullPolicy: Never
