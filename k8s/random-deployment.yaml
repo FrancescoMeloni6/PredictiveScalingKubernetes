@@ -19,6 +19,6 @@ spec:
       containers:
       - name: random-service
         image: random-service
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Never
         ports:
         - containerPort: 5000
