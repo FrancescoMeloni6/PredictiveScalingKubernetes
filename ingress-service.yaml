@@ -26,6 +26,7 @@ spec:
             name: hash-service
             port:
               number: 80
+
   - host: prometheus.local
     http:
       paths:
