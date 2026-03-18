@@ -1,3 +1,5 @@
 requests
 pandas
 prophet
+prometheus_client
+flask
