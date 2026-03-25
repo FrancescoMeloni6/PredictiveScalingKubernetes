@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: hash-scaler
+spec:
+  scaleTargetRef:
+    name: hash-service
+
+  minReplicaCount: 1
+  maxReplicaCount: 5
+
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus-server.default.svc:80
+      metricName: predicted_hash_rate
+      query: avg_over_time(predicted_hash_rate[5m])
+      threshold: "0.5"

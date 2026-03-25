@@ -14,8 +14,8 @@ PRED_HASH = Gauge("predicted_hash_rate", "Predicted hash req/sec")
 
 PROM_URL = "http://prometheus-server.default.svc:80"
 
-QUERY_RANDOM = "rate(random_requests_total[30m])"
-QUERY_HASH = "rate(hash_requests_total[30m])"
+QUERY_RANDOM = "sum(rate(random_requests_total[30m]))"
+QUERY_HASH = "sum(rate(hash_requests_total[30m]))"
 
 WINDOW_SIZE = 350
 FORECAST_STEPS = 48
