@@ -25,10 +25,7 @@ HTML_PAGE = """
 @app.route("/")
 def random_number():
     REQUEST_COUNT.inc()
-    r = random.randint(0, 1000000)
-    value = 0
-    for _ in range(r): # simulazione lavoro CPU
-        value += 1
+    value = random.randint(0, 1000000)
     return render_template_string(HTML_PAGE, number=value)
 
 @app.route("/metrics")

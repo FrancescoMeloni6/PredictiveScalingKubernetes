@@ -36,11 +36,8 @@ def hash_service():
     if request.method == "POST":
         REQUEST_COUNT.inc()
         text = request.form.get("input_text", "")
-
         data = text.encode()
-        for _ in range(10000):  # simulazione lavoro CPU
-            data = hashlib.sha256(data).digest()
-
+        data = hashlib.sha256(data).digest()
         hash_value = data.hex()
 
     return render_template_string(HTML_PAGE, hash_value=hash_value)
