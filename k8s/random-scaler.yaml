@@ -15,4 +15,4 @@ spec:
       serverAddress: http://prometheus-server.default.svc:80
       metricName: predicted_random_rate
       query: avg_over_time(predicted_random_rate[5m])
-      threshold: "0.5"
+      threshold: "1"
