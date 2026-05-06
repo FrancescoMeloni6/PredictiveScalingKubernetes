@@ -7,4 +7,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY load_gen.py .
 
-CMD ["python", "load_gen.py"]
+CMD ["locust", "-f", "load_gen.py", "--headless"]

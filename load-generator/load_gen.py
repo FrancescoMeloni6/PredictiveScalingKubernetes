@@ -1,45 +1,32 @@
-import os
-import time
 import math
 import random
-import requests
+from locust import HttpUser, task, constant, LoadTestShape
 
-TARGET_RANDOM  = os.getenv("TARGET_RANDOM",  "http://random-service.default.svc:80")
-TARGET_HASH    = os.getenv("TARGET_HASH",    "http://hash-service.default.svc:80")
-MIN_RPS        = float(os.getenv("MIN_RPS",  "1"))
-MAX_RPS        = float(os.getenv("MAX_RPS",  "10"))
-PERIOD_SECONDS = float(os.getenv("PERIOD_SECONDS", "1800"))
-HASH_RATIO     = float(os.getenv("HASH_RATIO", "0.5"))
+HASH_HOST   = "http://hash-service.default.svc:80"
+RANDOM_HOST = "http://random-service.default.svc:80"
+HASH_RATIO  = 0.5
+MIN_RPS        = 1
+MAX_RPS        = 10
+PERIOD_SECONDS = 60 * 60 * 24 
 
-_start_time   = time.time()
+class WorkloadUser(HttpUser):
+    wait_time = constant(1)
 
-def rps_sinusoidal(t: float) -> float:
-    amplitude = (MAX_RPS - MIN_RPS) / 2
-    midpoint  = (MAX_RPS + MIN_RPS) / 2
-    return midpoint + amplitude * math.sin(2 * math.pi * t / PERIOD_SECONDS)
+    @task
+    def generate_load(self):
+        if random.random() < HASH_RATIO:
+            payload = {"input_text": f"load-test-{random.randint(0, 999999)}"}
+            self.client.post(HASH_HOST, data=payload, name="hash-service", timeout=10)
+        else:
+            self.client.get(RANDOM_HOST, name="random-service", timeout=10)
 
-def send_request(url: str, service: str):
-    t0 = time.time()
-    if service == "hash":
-        payload = {"input_text": f"load-test-{random.randint(0, 999999)}"}
-        requests.post(url, data=payload, timeout=10)
-    else:
-        requests.get(url, timeout=10)
+class SinusoidalLoad(LoadTestShape):
+    def tick(self):
+        run_time  = self.get_run_time()
+        amplitude = (MAX_RPS - MIN_RPS) / 2
+        midpoint  = (MAX_RPS + MIN_RPS) / 2
+        rps       = midpoint + amplitude * math.sin(2 * math.pi * run_time / PERIOD_SECONDS)
 
-def main():
-        while True:
-            elapsed = time.time() - _start_time
-            rps = max(0.1, rps_sinusoidal(elapsed))
-
-            n_requests = max(1, round(rps))
-
-            for _ in range(n_requests):
-                if random.random() < HASH_RATIO:
-                    send_request(TARGET_HASH, "hash")
-                else:
-                    send_request(TARGET_RANDOM, "random")
-
-            time.sleep(1.0)
-
-if __name__ == "__main__":
-    main()
+        user_count  = max(1, round(rps))
+        spawn_rate  = max(1, user_count // 5)
+        return (user_count, spawn_rate)
