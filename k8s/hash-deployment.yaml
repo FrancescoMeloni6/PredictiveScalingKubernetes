@@ -20,5 +20,12 @@ spec:
       - name: hash-service
         image: hash-service
         imagePullPolicy: Never
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "500m"
+            memory: "128Mi"
         ports:
         - containerPort: 5001
