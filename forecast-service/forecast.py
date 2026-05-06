@@ -18,7 +18,6 @@ QUERY_HASH   = "sum(rate(hash_requests_total[5m]))"
 
 WINDOW_SIZE    = 2500
 FORECAST_STEPS = 1
-PERIOD_MINUTES = 30  # idealmente dovrebbe essere un giorno, ma per la simulazione accorcio il periodo a 30 minuti (simulo un giorno in 30 min)
 
 history_random = []
 history_hash   = []
@@ -46,16 +45,11 @@ def train_model(history):
 
 
     model = Prophet()
-    model.add_seasonality( # cambio la stagionalita' per la simulazione 
-        name='custom_cycle',
-        period=PERIOD_MINUTES / (60 * 24), # calcolato in giorni
-        fourier_order=5,
-    )
     model.fit(df)
     return model
 
 def forecast(model, history):
-    if model is None or len(history) < 10:
+    if model is None or len(history) < 288:
         # return history[-1]["y"]
         return 0.5 # usato nella simulazione per far vedere quando il modello inizia veramente a funzionare
 
