@@ -1,15 +1,20 @@
 import math
 import random
+from datetime import datetime
 from locust import HttpUser, task, constant, LoadTestShape
 
 HASH_HOST   = "http://hash-service.default.svc:80"
 RANDOM_HOST = "http://random-service.default.svc:80"
 HASH_RATIO  = 0.5
-MIN_RPS        = 1
-MAX_RPS        = 10
-PERIOD_SECONDS = 60 * 60 * 24 
+
+MIN_RPS     = 1
+MAX_RPS     = 10
+PEAK_HOUR   = 18
+MIN_HOUR    = PEAK_HOUR - 12
+PERIOD_SEC  = 24 * 3600
 
 class WorkloadUser(HttpUser):
+    host = RANDOM_HOST
     wait_time = constant(1)
 
     @task
@@ -22,11 +27,17 @@ class WorkloadUser(HttpUser):
 
 class SinusoidalLoad(LoadTestShape):
     def tick(self):
-        run_time  = self.get_run_time()
+        now = datetime.now()
+
+        t = ((now.hour - MIN_HOUR - 6) % 24) * 3600 + now.minute * 60 + now.second
+
         amplitude = (MAX_RPS - MIN_RPS) / 2
         midpoint  = (MAX_RPS + MIN_RPS) / 2
-        rps       = midpoint + amplitude * math.sin(2 * math.pi * run_time / PERIOD_SECONDS)
 
-        user_count  = max(1, round(rps))
-        spawn_rate  = max(1, user_count // 5)
+        rps = midpoint + amplitude * math.sin(
+            2 * math.pi * t / PERIOD_SEC
+        )
+
+        user_count = max(1, round(rps))
+        spawn_rate = max(1, user_count // 5)
         return (user_count, spawn_rate)

@@ -4,7 +4,6 @@ metadata:
   name: load-generator
   labels:
     app: load-generator
-    phase: training
 spec:
   replicas: 1
   selector:
