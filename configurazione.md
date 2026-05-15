@@ -39,7 +39,6 @@ kubectl apply -f k8s/hash-deployment.yaml
 kubectl apply -f k8s/hash-service.yaml
 kubectl apply -f k8s/forecast-deployment.yaml
 kubectl apply -f k8s/forecast-service.yaml
-kubectl apply -f k8s/ingress-service.yaml
 kubectl apply -f k8s/load-generator.yaml
 
 # Scaler KEDA (da applicare dopo che i servizi sono Running)
