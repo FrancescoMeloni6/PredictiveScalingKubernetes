@@ -2,5 +2,5 @@
 
 *.png
 *.bat
-relazione*
+relazione
 !relazione.pdf

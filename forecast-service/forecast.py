@@ -39,10 +39,9 @@ def add_point(history, value):
         history.pop(0)
 
 def train_model(history):
-    if len(history) < 10:
+    if len(history) < 288:
         return None
     df = pd.DataFrame(history)
-
 
     model = Prophet()
     model.fit(df)
